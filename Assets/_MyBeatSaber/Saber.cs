@@ -24,14 +24,14 @@ namespace Musahi.MY_VR_Games.MyBeatSaber
         {
             if(HitCheckNode() && CanSliceAngle())
             {
-                Destroy(hit.transform.gameObject);
+               Destroy(hit.transform.gameObject);
             }
             previousPos = transform.position;
         }
 
         private bool HitCheckNode()
         {
-            return Physics.Raycast(transform.position, transform.forward, out hit, layerMask);
+            return Physics.Raycast(transform.position, transform.forward, out hit, 0.1f,layerMask);
         }
 
         private bool CanSliceAngle()

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2190188877113653658}
   - component: {fileID: 2190188877113653659}
   - component: {fileID: -576594245741212404}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Saber_Blue
   m_TagString: Untagged
   m_Icon: {fileID: 0}

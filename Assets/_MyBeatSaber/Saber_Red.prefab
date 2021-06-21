@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8822051129958071215}
   - component: {fileID: 8822051129958071208}
   - component: {fileID: -4045026282311548268}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Saber_Red
   m_TagString: Untagged
   m_Icon: {fileID: 0}
