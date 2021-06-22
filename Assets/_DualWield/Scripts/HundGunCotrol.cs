@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.InputSystem;
+using Cysharp.Threading.Tasks;
 
 namespace Musahi.MY_VR_Games.DualWield
 {
@@ -16,6 +17,7 @@ namespace Musahi.MY_VR_Games.DualWield
 
         [SerializeField] Transform muzzle;
         [SerializeField] float maxShotRange = 10f;
+        [SerializeField] float lineRemdererDuration = 0.1f;
 
 
         LineRenderer lineRenderer;
@@ -26,7 +28,7 @@ namespace Musahi.MY_VR_Games.DualWield
             anim = GetComponent<Animator>();
             lineRenderer = GetComponent<LineRenderer>();
 
-            lineRenderer.SetPositions(new Vector3[] { muzzle.position, muzzle.position });
+            lineRenderer.positionCount = 2;
             controller.activateAction.action.performed += Action_TriggerPressed;
         }
 
@@ -48,22 +50,30 @@ namespace Musahi.MY_VR_Games.DualWield
             DrawLine();
         }
 
-
         private async void DrawLine()
         {
             var isHit = Physics.Raycast(muzzle.position, muzzle.forward, out RaycastHit hit, maxShotRange);
-
             if (isHit)
             {
-                if(hit.transform.TryGetComponent(out IDamagable target))
+                if (hit.transform.TryGetComponent(out IDamagable target))
                 {
                     target.OnDamage();
                 }
-                lineRenderer.SetPosition(1, hit.point);
+                SetLine(muzzle.position, hit.point);
             }
-            lineRenderer.SetPosition(1, muzzle.position + muzzle.forward * maxShotRange);
+            else
+            {
+                SetLine(muzzle.position, muzzle.position + muzzle.forward * maxShotRange);
+            }
 
-        
+            await UniTask.Delay(System.TimeSpan.FromSeconds(lineRemdererDuration), false, PlayerLoopTiming.FixedUpdate, this.GetCancellationTokenOnDestroy());
+            SetLine(muzzle.position, muzzle.position);
+        }
+
+        private void SetLine(Vector3 origin, Vector3 end)
+        {
+            lineRenderer.SetPosition(0, origin);
+            lineRenderer.SetPosition(1, end);
         }
     }
 }
