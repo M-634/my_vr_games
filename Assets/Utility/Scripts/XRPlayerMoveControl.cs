@@ -7,11 +7,19 @@ using UnityEngine.XR.Interaction.Toolkit;
 
 namespace Musahi.MY_VR_Games
 {
+    public enum PlayerMovementType
+    {
+        NoController,//コントローラーで移動しない
+        Teleport,//テレポートで移動する
+        Stick//コントローラーのスティック移動 
+    }
+
     /// <summary>
     /// XRコントローラーの移動を制御するクラス
     /// </summary>
     public class XRPlayerMoveControl : MonoBehaviour
     {
+        [SerializeField] PlayerMovementType movementType;
         [SerializeField] XRNode inputSorce;
         [SerializeField] float moveSpeed = 5.0f;
         [SerializeField] float gravityScale = 9.81f;
@@ -22,7 +30,7 @@ namespace Musahi.MY_VR_Games
         CharacterController characterController;
         Vector2 inputAxis;
         Vector3 velocity;
-     
+
         void Start()
         {
             characterController = GetComponent<CharacterController>();
@@ -31,23 +39,36 @@ namespace Musahi.MY_VR_Games
 
         void Update()
         {
+            if (movementType == PlayerMovementType.NoController) return;
+
             var device = InputDevices.GetDeviceAtXRNode(inputSorce);
             device.TryGetFeatureValue(CommonUsages.primary2DAxis, out inputAxis);
         }
 
         private void FixedUpdate()
         {
-            Move();
+            CapsuleFollowHMD();
+
+            switch (movementType)
+            {
+                case PlayerMovementType.NoController:
+                    break;
+                case PlayerMovementType.Teleport:
+                    break;
+                case PlayerMovementType.Stick:
+                    StickMovement();
+                    break;
+                default:
+                    break;
+            }
         }
 
 
         /// <summary>
         /// コントローラーのスティック移動
         /// </summary>
-        private void Move()
+        private void StickMovement()
         {
-            CapsuleFollowHMD();
-
             if (CheakGround())
             {
                 //HMDが向いている方向に進む。

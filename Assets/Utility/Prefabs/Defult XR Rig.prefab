@@ -770,6 +770,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6539e94b6172eba47be8c091ef518ced, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  movementType: 0
   inputSorce: 4
   moveSpeed: 5
   gravityScale: 9.81
