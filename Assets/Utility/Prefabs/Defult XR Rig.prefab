@@ -771,7 +771,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movementType: 0
-  inputSorce: 4
+  inputSource: 0
   moveSpeed: 5
   gravityScale: 9.81
   groudLayer:

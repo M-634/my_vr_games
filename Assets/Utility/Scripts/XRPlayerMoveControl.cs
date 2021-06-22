@@ -20,7 +20,7 @@ namespace Musahi.MY_VR_Games
     public class XRPlayerMoveControl : MonoBehaviour
     {
         [SerializeField] PlayerMovementType movementType;
-        [SerializeField] XRNode inputSorce;
+        [SerializeField] XRNode inputSource;
         [SerializeField] float moveSpeed = 5.0f;
         [SerializeField] float gravityScale = 9.81f;
         [SerializeField] LayerMask groudLayer;
@@ -41,7 +41,7 @@ namespace Musahi.MY_VR_Games
         {
             if (movementType == PlayerMovementType.NoController) return;
 
-            var device = InputDevices.GetDeviceAtXRNode(inputSorce);
+            var device = InputDevices.GetDeviceAtXRNode(inputSource);
             device.TryGetFeatureValue(CommonUsages.primary2DAxis, out inputAxis);
         }
 

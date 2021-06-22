@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using DG.Tweening;
 
 namespace Musahi.MY_VR_Games.DualWield
 {
@@ -8,8 +9,7 @@ namespace Musahi.MY_VR_Games.DualWield
     public class TargetControl : MonoBehaviour, IDamagable
     {
         [SerializeField] UnityEventsWrapper OnDieEvents = default;
-        [SerializeField] bool isDebug = false;
-
+        [SerializeField] bool isTest = false;
         bool isDead = false;
 
         /// <summary>
@@ -18,17 +18,8 @@ namespace Musahi.MY_VR_Games.DualWield
         /// <param name="damage"></param>
         public void OnDamage(float damage = 0)
         {
-            if (isDebug)
-            {
-                
-            }
-            else
-            {
-                if (!isDead)
-                {
-                    OnDie();
-                }
-            }
+            if (isDead) return;
+            OnDie();
         }
 
         private void OnDie()
@@ -37,7 +28,11 @@ namespace Musahi.MY_VR_Games.DualWield
             {
                 OnDieEvents.Invoke();
             }
-            isDead = true;
+
+            if (!isTest)
+            {
+                isDead = true;
+            }
         }
     }
 }
