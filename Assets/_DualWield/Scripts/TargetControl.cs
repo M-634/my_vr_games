@@ -10,7 +10,7 @@ namespace Musahi.MY_VR_Games.DualWield
         [SerializeField] UnityEventsWrapper OnDieEvents = default;
         [SerializeField] bool isDebug = false;
 
-        bool isDead = false; 
+        bool isDead = false;
 
         /// <summary>
         /// ターゲットは、銃弾が当たったら一撃で倒れる
@@ -18,9 +18,22 @@ namespace Musahi.MY_VR_Games.DualWield
         /// <param name="damage"></param>
         public void OnDamage(float damage = 0)
         {
-            if (isDead && !isDebug) return;
+            if (isDebug)
+            {
+                
+            }
+            else
+            {
+                if (!isDead)
+                {
+                    OnDie();
+                }
+            }
+        }
 
-            if(OnDieEvents != null)
+        private void OnDie()
+        {
+            if (OnDieEvents != null)
             {
                 OnDieEvents.Invoke();
             }
