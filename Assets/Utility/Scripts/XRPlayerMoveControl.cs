@@ -11,7 +11,8 @@ namespace Musahi.MY_VR_Games
     {
         NoController,//コントローラーで移動しない
         Teleport,//テレポートで移動する
-        Stick//コントローラーのスティック移動 
+        Stick,//コントローラーのスティック移動
+        Automatic//自動的に移動する
     }
 
     /// <summary>
@@ -26,6 +27,8 @@ namespace Musahi.MY_VR_Games
         [SerializeField] LayerMask groudLayer;
         [SerializeField] float additionalHeight = 0.2f;
 
+        public bool AutoMoveStart { get; set; }
+
         XRRig rig;
         CharacterController characterController;
         Vector2 inputAxis;
@@ -39,7 +42,7 @@ namespace Musahi.MY_VR_Games
 
         void Update()
         {
-            if (movementType == PlayerMovementType.NoController) return;
+            if (movementType == PlayerMovementType.NoController || movementType == PlayerMovementType.Automatic) return;
 
             var device = InputDevices.GetDeviceAtXRNode(inputSource);
             device.TryGetFeatureValue(CommonUsages.primary2DAxis, out inputAxis);
@@ -57,6 +60,9 @@ namespace Musahi.MY_VR_Games
                     break;
                 case PlayerMovementType.Stick:
                     StickMovement();
+                    break;
+                case PlayerMovementType.Automatic:
+                    AutoMove();
                     break;
                 default:
                     break;
@@ -81,6 +87,18 @@ namespace Musahi.MY_VR_Games
             {
                 velocity += gravityScale * Time.fixedDeltaTime * Vector3.down;
                 characterController.Move(velocity * Time.fixedDeltaTime);
+            }
+        }
+
+
+        /// <summary>
+        /// プレイヤーのz軸正方向に自動的に移動する
+        /// </summary>
+        private void AutoMove()
+        {
+            if (AutoMoveStart)
+            {
+                characterController.Move(moveSpeed * Time.fixedDeltaTime * transform.forward);
             }
         }
 

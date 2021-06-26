@@ -19,6 +19,8 @@ namespace Musahi.MY_VR_Games.DualWield
         [SerializeField] float maxShotRange = 10f;
         [SerializeField] float lineRemdererDuration = 0.1f;
 
+        [SerializeField] GameObject popUpScoreUI = default;
+
 
         LineRenderer lineRenderer;
         Animator anim;
@@ -41,15 +43,14 @@ namespace Musahi.MY_VR_Games.DualWield
             }
         }
 
-        /// <summary>
-        /// アニメーションイベントから呼ばれる。
-        /// Rayを飛ばして、敵ターゲットに当たったか調べる。当たったら、敵を倒す。
-        /// </summary>
         public void Shot()
         {
             DrawLine();
         }
 
+        /// <summary>
+        /// Rayを飛ばして、敵ターゲットに当たったか調べる。当たったら、敵を倒す。
+        /// </summary>
         private async void DrawLine()
         {
             var isHit = Physics.Raycast(muzzle.position, muzzle.forward, out RaycastHit hit, maxShotRange);
@@ -58,6 +59,11 @@ namespace Musahi.MY_VR_Games.DualWield
                 if (hit.transform.TryGetComponent(out IDamagable target))
                 {
                     target.OnDamage();
+                    if (popUpScoreUI)
+                    {
+                        popUpScoreUI.SetActive(true);
+                        popUpScoreUI.transform.forward = transform.forward;
+                    }
                 }
                 SetLine(muzzle.position, hit.point);
             }
@@ -67,7 +73,12 @@ namespace Musahi.MY_VR_Games.DualWield
             }
 
             await UniTask.Delay(System.TimeSpan.FromSeconds(lineRemdererDuration), false, PlayerLoopTiming.FixedUpdate, this.GetCancellationTokenOnDestroy());
+
             SetLine(muzzle.position, muzzle.position);
+            if (popUpScoreUI.activeSelf)
+            {
+                popUpScoreUI.SetActive(false);
+            }
         }
 
         private void SetLine(Vector3 origin, Vector3 end)
