@@ -13,15 +13,54 @@ namespace Musahi.MY_VR_Games.DualWield
     [RequireComponent(typeof(PlayableDirector))]
     public class DualWieldGameFlowManager : SingletonMonoBehaviour<DualWieldGameFlowManager>
     {
-        [SerializeField] PlayableAsset GameReadyStartPlayable = default;
-        [SerializeField] PlayableAsset GameClearPlayable = default;
-        [SerializeField] PlayableAsset GameOverPlayable = default;
-        [SerializeField] XRPlayerMoveControl playerControl;
-        [SerializeField] List<LevelSettingSOData> levelDatas;
+        public class InstantiateLevelData
+        {
+            public int LevelId { get; private set; }
+            public GameObject LevelObject { get; private set; }
+            public PlayableDirector LevelDirector { get; private set; }
+
+            public InstantiateLevelData(int id, GameObject gameObject, PlayableDirector director)
+            {
+                LevelId = id;
+                LevelObject = gameObject;
+                LevelDirector = director;
+            }
+
+            public void LevelActive(bool value)
+            {
+                LevelObject.SetActive(value);
+            }
+
+            public void PlayLevelDirector()
+            {
+                if (LevelDirector)
+                {
+                    LevelDirector.Play();
+                }
+            }
+
+            public void StopLevelDirector()
+            {
+                if (LevelDirector)
+                {
+                    LevelDirector.Stop();
+                }
+            }
+        }
 
         ///<summary> false : GameOver , true : GameClear/// </summary>
         public Action<bool> EndGameAction;
-        public LevelSettingSOData CurrentLevelData { get; private set; }
+
+        [SerializeField] PlayableAsset GameReadyStartPlayable = default;
+        [SerializeField] PlayableAsset GameClearPlayable = default;
+        [SerializeField] PlayableAsset GameOverPlayable = default;
+
+        [SerializeField] XRPlayerMoveControl playerControl;
+        [SerializeField] List<LevelSettingSOData> levelDatas;
+
+        private readonly List<InstantiateLevelData> instantiateLevelDataList = new List<InstantiateLevelData>();
+
+        public InstantiateLevelData CurrentLevelData { get; private set; }
 
         PlayableDirector director;
 
@@ -32,10 +71,22 @@ namespace Musahi.MY_VR_Games.DualWield
             EndGameAction += EndGame;
 
             //各ステージを初期化する
-            foreach (var level in levelDatas)
+            foreach (var data in levelDatas)
             {
-                level.ActiveLevel(false);
+                SetLevelData(data);
             }
+        }
+
+        /// <summary>
+        /// インスタンス化したレベルデータをセットする
+        /// </summary>
+        /// <param name="data"></param>
+        private void SetLevelData(LevelSettingSOData data)
+        {
+            var levelPrefab = Instantiate(data.GetLevelPrefab);
+            levelPrefab.TryGetComponent(out PlayableDirector levelDirector);
+            var instanceLevelData = new InstantiateLevelData(data.GetID, levelPrefab, levelDirector);
+            instantiateLevelDataList.Add(instanceLevelData);
         }
 
         private void TimeLine_StopAction(PlayableDirector _director)
@@ -43,13 +94,14 @@ namespace Musahi.MY_VR_Games.DualWield
             if (_director.playableAsset == GameReadyStartPlayable)
             {
                 //ステージのタイムラインを再生する。プレイヤーを動かす
-                CurrentLevelData.PlayLevelDirector();
                 playerControl.AutoMoveStart = true;
+                CurrentLevelData.PlayLevelDirector();
             }
             //リザルトが出た後
             else
             {
                 //初期状態に戻る
+                Debug.Log("result");
             }
             director.playableAsset = null;
         }
@@ -59,16 +111,16 @@ namespace Musahi.MY_VR_Games.DualWield
         /// 一時的に画面を暗くし、その間にステージを出現させる。
         /// それが出来たら、画面を元に戻してそのステージを始める
         /// </summary>
-        public void OnSelectedLevel(int levelID = 0)
+        public void OnSelectedLevel(int getID = 0)
         {
             //fadeOut
 
-            foreach (var level in levelDatas)
+            foreach (var data in instantiateLevelDataList)
             {
-                if (levelID == level.ID)
+                if (getID == data.LevelId)
                 {
-                    level.ActiveLevel(true);
-                    CurrentLevelData = level;
+                    data.LevelActive(true);
+                    CurrentLevelData = data;
                     //fadeIn
 
                     GameReadyStart();
@@ -85,10 +137,11 @@ namespace Musahi.MY_VR_Games.DualWield
         /// </summary>
         private void EndGame(bool isGameClear)
         {
+            CurrentLevelData.StopLevelDirector();
             playerControl.AutoMoveStart = false;
             //fadeOut
             playerControl.ResetPosition();
-            CurrentLevelData.ActiveLevel(false);
+            CurrentLevelData.LevelActive(false);
             CurrentLevelData = null;
             //fadeIn
             if (isGameClear)

@@ -15,44 +15,8 @@ namespace Musahi.MY_VR_Games.DualWield
     {
         [SerializeField] int levelID;
         [SerializeField] GameObject levelPrefab;
-        [SerializeField] PlayableDirector director;
-
-        public int ID => levelID;
-        public GameObject Level => levelPrefab;
-        public PlayableDirector GetDirector => director;
-
-        /// <summary>
-        /// ステージオブジェクト全体のアクティブを切り替える関数
-        /// </summary>
-        /// <param name="value"></param>
-        public void ActiveLevel(bool value)
-        {
-            if (levelPrefab)
-            {
-                levelPrefab.SetActive(value);
-            }
-        }
-
-        /// <summary>
-        /// ステージのタイムラインを再生関数
-        /// </summary>
-        public void PlayLevelDirector()
-        {
-            if (director)
-            {
-                director.Play();
-            }
-        }
-
-        /// <summary>
-        /// ステージのタイムラインを終了させる関数
-        /// </summary>
-        public void EndLevelDirector()
-        {
-            if (director)
-            {
-                director.Stop();
-            }
-        }
+    
+        public int GetID => levelID;
+        public GameObject GetLevelPrefab => levelPrefab;
     }
 }
