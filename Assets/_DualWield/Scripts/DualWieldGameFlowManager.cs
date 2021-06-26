@@ -13,11 +13,12 @@ namespace Musahi.MY_VR_Games.DualWield
     [RequireComponent(typeof(PlayableDirector))]
     public class DualWieldGameFlowManager : SingletonMonoBehaviour<DualWieldGameFlowManager>
     {
+        [Serializable]
         public class InstantiateLevelData
         {
-            public int LevelId { get; private set; }
-            public GameObject LevelObject { get; private set; }
-            public PlayableDirector LevelDirector { get; private set; }
+            public int LevelId;// { get; private set; }
+            public GameObject LevelObject;// { get; private set; }
+            public PlayableDirector LevelDirector;// { get; private set; }
 
             public InstantiateLevelData(int id, GameObject gameObject, PlayableDirector director)
             {
@@ -48,8 +49,6 @@ namespace Musahi.MY_VR_Games.DualWield
             }
         }
 
-        ///<summary> false : GameOver , true : GameClear/// </summary>
-        public Action<bool> EndGameAction;
 
         [SerializeField] PlayableAsset GameReadyStartPlayable = default;
         [SerializeField] PlayableAsset GameClearPlayable = default;
@@ -60,7 +59,8 @@ namespace Musahi.MY_VR_Games.DualWield
 
         private readonly List<InstantiateLevelData> instantiateLevelDataList = new List<InstantiateLevelData>();
 
-        public InstantiateLevelData CurrentLevelData { get; private set; }
+        [SerializeField]
+        public InstantiateLevelData CurrentLevelData;// { get; private set; }
 
         PlayableDirector director;
 
@@ -68,8 +68,7 @@ namespace Musahi.MY_VR_Games.DualWield
         {
             director = GetComponent<PlayableDirector>();
             director.stopped += TimeLine_StopAction;
-            EndGameAction += EndGame;
-
+  
             //各ステージを初期化する
             foreach (var data in levelDatas)
             {
@@ -135,14 +134,14 @@ namespace Musahi.MY_VR_Games.DualWield
         /// プレイヤーを止める。フェードアウト中にステージデータをクリアし、プレイヤーを初期地に戻す。
         /// fadeIn後にリザルトを出す
         /// </summary>
-        private void EndGame(bool isGameClear)
+        public void EndGame(bool isGameClear)
         {
+            //Event発行
             CurrentLevelData.StopLevelDirector();
             playerControl.AutoMoveStart = false;
             //fadeOut
             playerControl.ResetPosition();
             CurrentLevelData.LevelActive(false);
-            CurrentLevelData = null;
             //fadeIn
             if (isGameClear)
             {

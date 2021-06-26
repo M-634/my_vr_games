@@ -11,7 +11,7 @@ namespace Musahi.MY_VR_Games.DualWield
         {
             if (other.transform.CompareTag("Player"))
             {
-                DualWieldGameFlowManager.Instance.EndGameAction.Invoke(true);
+                DualWieldGameFlowManager.Instance.EndGame(true);
             }       
         }
     }
