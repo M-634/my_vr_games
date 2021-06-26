@@ -11,15 +11,18 @@ namespace Musahi.MY_VR_Games.DualWield
     /// Timelineをベースに管理する。
     /// </summary>
     [RequireComponent(typeof(PlayableDirector))]
-    public class DualWieldGameFlowManager : MonoBehaviour
+    public class DualWieldGameFlowManager : SingletonMonoBehaviour<DualWieldGameFlowManager>
     {
         [SerializeField] PlayableAsset GameReadyStartPlayable = default;
         [SerializeField] PlayableAsset GameClearPlayable = default;
         [SerializeField] PlayableAsset GameOverPlayable = default;
         [SerializeField] XRPlayerMoveControl playerControl;
+        [SerializeField] List<LevelSettingSOData> levelDatas;
 
-        public Action GameStartStageAction;
+        ///<summary> false : GameOver , true : GameClear/// </summary>
         public Action<bool> EndGameAction;
+        public LevelSettingSOData CurrentLevelData { get; private set; }
+
         PlayableDirector director;
 
         private void Start()
@@ -28,21 +31,22 @@ namespace Musahi.MY_VR_Games.DualWield
             director.stopped += TimeLine_StopAction;
             EndGameAction += EndGame;
 
-            //test
-            GameReadyStart();
+            //各ステージを初期化する
+            foreach (var level in levelDatas)
+            {
+                level.ActiveLevel(false);
+            }
         }
 
         private void TimeLine_StopAction(PlayableDirector _director)
         {
-            if(_director.playableAsset == GameReadyStartPlayable)
+            if (_director.playableAsset == GameReadyStartPlayable)
             {
                 //ステージのタイムラインを再生する。プレイヤーを動かす
+                CurrentLevelData.PlayLevelDirector();
                 playerControl.AutoMoveStart = true;
-                if(GameStartStageAction != null)
-                {
-                    GameStartStageAction.Invoke();
-                }
             }
+            //リザルトが出た後
             else
             {
                 //初期状態に戻る
@@ -50,18 +54,43 @@ namespace Musahi.MY_VR_Games.DualWield
             director.playableAsset = null;
         }
 
-        private void GameReadyStart()
+        /// <summary>
+        /// ステージ選択された時に呼ばれる関数。
+        /// 一時的に画面を暗くし、その間にステージを出現させる。
+        /// それが出来たら、画面を元に戻してそのステージを始める
+        /// </summary>
+        public void OnSelectedLevel(int levelID = 0)
         {
-            director.PlayNullCheck(GameReadyStartPlayable);
+            //fadeOut
+
+            foreach (var level in levelDatas)
+            {
+                if (levelID == level.ID)
+                {
+                    level.ActiveLevel(true);
+                    CurrentLevelData = level;
+                    //fadeIn
+
+                    GameReadyStart();
+                    return;
+                }
+            }
+            Debug.LogWarning("指定したステージがありません");
         }
 
+
         /// <summary>
-        /// プレイヤーを止める。敵を全て消す。
-        /// シーンを初期状態に戻して、リザルトを出す
+        /// プレイヤーを止める。フェードアウト中にステージデータをクリアし、プレイヤーを初期地に戻す。
+        /// fadeIn後にリザルトを出す
         /// </summary>
-        private void EndGame(bool isGameClear = false)
+        private void EndGame(bool isGameClear)
         {
             playerControl.AutoMoveStart = false;
+            //fadeOut
+            playerControl.ResetPosition();
+            CurrentLevelData.ActiveLevel(false);
+            CurrentLevelData = null;
+            //fadeIn
             if (isGameClear)
             {
                 GameClear();
@@ -70,6 +99,12 @@ namespace Musahi.MY_VR_Games.DualWield
             {
                 GameOver();
             }
+        }
+
+
+        private void GameReadyStart()
+        {
+            director.PlayNullCheck(GameReadyStartPlayable);
         }
 
         private void GameClear()
@@ -82,29 +117,5 @@ namespace Musahi.MY_VR_Games.DualWield
             director.PlayNullCheck(GameOverPlayable);
         }
     }
-
-
 }
-namespace Musahi.MY_VR_Games
-{
-    public static class UtilityExtensionClasses
-    {
-        /// <summary>
-        ///  PlayableDirectorクラスの拡張メソッド。
-        ///  PlayableAssetのNullチェック
-        /// </summary>
-        /// <param name="director"></param>
-        /// <param name="playableAsset"></param>
-        public static void PlayNullCheck(this PlayableDirector director, PlayableAsset playableAsset)
-        {
-            if (playableAsset)
-            {
-                director.Play(playableAsset);
-            }
-            else
-            {
-                Debug.LogWarning($"{playableAsset}がアサインされていません！");
-            }
-        }
-    }
-}
+

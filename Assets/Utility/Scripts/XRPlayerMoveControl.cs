@@ -115,5 +115,13 @@ namespace Musahi.MY_VR_Games
             Vector3 capsuleCenter = transform.InverseTransformPoint(rig.cameraGameObject.transform.position);
             characterController.center = new Vector3(capsuleCenter.x, characterController.height / 2 + characterController.skinWidth, capsuleCenter.z);
         }
+
+        /// <summary>
+        /// プレイヤーを原点に戻す
+        /// </summary>
+        public void ResetPosition()
+        {
+            transform.position = Vector3.zero;
+        }
     }
 }
