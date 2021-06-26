@@ -29,7 +29,10 @@ namespace Musahi.MY_VR_Games.DualWield
 
             public void LevelActive(bool value)
             {
-                LevelObject.SetActive(value);
+                if (LevelObject)
+                {
+                    LevelObject.SetActive(value);
+                }
             }
 
             public void PlayLevelDirector()
@@ -68,7 +71,7 @@ namespace Musahi.MY_VR_Games.DualWield
         {
             director = GetComponent<PlayableDirector>();
             director.stopped += TimeLine_StopAction;
-  
+
             //各ステージを初期化する
             foreach (var data in levelDatas)
             {
@@ -85,6 +88,7 @@ namespace Musahi.MY_VR_Games.DualWield
             var levelPrefab = Instantiate(data.GetLevelPrefab);
             levelPrefab.TryGetComponent(out PlayableDirector levelDirector);
             var instanceLevelData = new InstantiateLevelData(data.GetID, levelPrefab, levelDirector);
+            instanceLevelData.LevelActive(false);
             instantiateLevelDataList.Add(instanceLevelData);
         }
 

@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Playables;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 
 namespace Musahi.MY_VR_Games
 {
@@ -21,6 +23,19 @@ namespace Musahi.MY_VR_Games
             {
                 Debug.LogWarning($"{playableAsset}がアサインされていません！");
             }
+        }
+        /// <summary>
+        /// アクティブの切り替えを遅延させる拡張メソッド
+        /// </summary>
+        /// <param name="gameObject"></param>
+        /// <param name="value"></param>
+        /// <param name="duration"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static async UniTask DelaySetActive(this GameObject gameObject,bool value, float duration = 0f,CancellationToken token = default)
+        {
+            await UniTask.Delay(System.TimeSpan.FromSeconds(duration), false, PlayerLoopTiming.Update, token);
+            gameObject.SetActive(value);
         }
     }
 }

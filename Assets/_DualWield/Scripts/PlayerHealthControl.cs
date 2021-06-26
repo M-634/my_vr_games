@@ -23,7 +23,7 @@ namespace Musahi.MY_VR_Games.DualWield
             set 
             {
                 currentHitCount = value;
-                vignette.intensity.Override(1 - currentHitCount / maxHitCount);
+                vignette.intensity.Override(1 - (float)currentHitCount / maxHitCount);
             }
         }
 
@@ -47,8 +47,8 @@ namespace Musahi.MY_VR_Games.DualWield
         {
             if (isDead) return;
 
-            maxHitCount--; 
-            if(maxHitCount == 0)
+            CurrentHitCount--;
+            if(CurrentHitCount == 0)
             {
                 OnDie();
                 return;
