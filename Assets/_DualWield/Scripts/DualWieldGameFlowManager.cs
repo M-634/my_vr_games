@@ -7,8 +7,8 @@ using UnityEngine.Playables;
 namespace Musahi.MY_VR_Games.DualWield
 {
     /// <summary>
-    /// DualWieldのスタート、クリア、ゲームオーバー等の流れを管理するクラス
-    /// Timelineをベースに管理する。
+    /// DualWieldのスタート、クリア、ゲームオーバー等の流れと獲得スコアを管理するクラス。
+    /// Timelineをベースに管理する。また、スコアに応じてランクを付けて保存する
     /// </summary>
     [RequireComponent(typeof(PlayableDirector))]
     public class DualWieldGameFlowManager : SingletonMonoBehaviour<DualWieldGameFlowManager>
@@ -52,7 +52,6 @@ namespace Musahi.MY_VR_Games.DualWield
             }
         }
 
-
         [SerializeField] PlayableAsset GameReadyStartPlayable = default;
         [SerializeField] PlayableAsset GameClearPlayable = default;
         [SerializeField] PlayableAsset GameOverPlayable = default;
@@ -60,11 +59,12 @@ namespace Musahi.MY_VR_Games.DualWield
         [SerializeField] XRPlayerMoveControl playerControl;
         [SerializeField] List<LevelSettingSOData> levelDatas;
 
-        private readonly List<InstantiateLevelData> instantiateLevelDataList = new List<InstantiateLevelData>();
 
-        [SerializeField]
+        [SerializeField]//test
         public InstantiateLevelData CurrentLevelData;// { get; private set; }
 
+
+        private readonly List<InstantiateLevelData> instantiateLevelDataList = new List<InstantiateLevelData>();
         PlayableDirector director;
 
         private void Start()
@@ -130,9 +130,8 @@ namespace Musahi.MY_VR_Games.DualWield
                     return;
                 }
             }
-            Debug.LogWarning("指定したステージがありません");
+            Debug.LogWarning("指定したIDのステージが存在しません");
         }
-
 
         /// <summary>
         /// プレイヤーを止める。フェードアウト中にステージデータをクリアし、プレイヤーを初期地に戻す。
@@ -156,7 +155,6 @@ namespace Musahi.MY_VR_Games.DualWield
                 GameOver();
             }
         }
-
 
         private void GameReadyStart()
         {
