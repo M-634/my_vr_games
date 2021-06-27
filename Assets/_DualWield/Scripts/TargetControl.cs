@@ -10,7 +10,7 @@ namespace Musahi.MY_VR_Games.DualWield
     /// 敵ターゲットを管理するクラス
     /// 追いかけては来ない
     /// </summary>
-    public class TargetControl : MonoBehaviour, IDamagable
+    public class TargetControl : MonoBehaviour, IDamagable,IPoolUser<TargetControl>
     {
         [SerializeField] Transform player;
         [SerializeField] float attackRange = 5f;
@@ -20,11 +20,16 @@ namespace Musahi.MY_VR_Games.DualWield
 
         [SerializeField] Transform muzzle;
         [SerializeField] Bullet bulletPrefab;
+        [SerializeField, Range(1, 100)] int bulletPoolSize = 10;
+        [SerializeField] Transform poolObjectParent;
 
         [SerializeField] UnityEventsWrapper OnDieEvents = default;
+
         [SerializeField] bool isTest = false;
+
         bool isDead = false;
         float lastAttackTime;
+        PoolObjectManager poolObjectManager;
 
         private void Start()
         {
@@ -32,6 +37,34 @@ namespace Musahi.MY_VR_Games.DualWield
             {
                 player = GameObject.FindGameObjectWithTag("Player").transform;
             }
+            InitializePoolObject(bulletPoolSize);
+        }
+
+        public void InitializePoolObject(int poolSize = 1)
+        {
+            poolObjectManager = new PoolObjectManager();
+
+            if (!poolObjectParent)
+            {
+                poolObjectParent = transform;
+            }
+
+            for (int i = 0; i < poolSize; i++)
+            {
+                SetPoolObj();
+            }
+        }
+
+        public PoolObjectManager.PoolObject SetPoolObj()
+        {
+            var poolObj = poolObjectManager.InstantiatePoolObj();
+
+            var bullet = Instantiate(bulletPrefab, poolObjectParent);
+
+            poolObj.AddObj(bullet.gameObject);
+            bullet.SetVelocity(muzzle);
+            poolObj.SetActiveAll(false);
+            return poolObj;
         }
 
 
@@ -47,10 +80,9 @@ namespace Musahi.MY_VR_Games.DualWield
             }
         }
 
-        private void Shot()//後でObjectPoolに変える
+        private void Shot()
         {
-            var b = Instantiate(bulletPrefab,muzzle.position,Quaternion.identity);
-            b.SetVelocity(muzzle);
+            poolObjectManager.UsePoolObject(muzzle.position, muzzle.rotation, SetPoolObj);
             lastAttackTime = Time.time;
         }
 
@@ -100,6 +132,7 @@ namespace Musahi.MY_VR_Games.DualWield
             Handles.color = attackRangeColor;
             Handles.DrawSolidDisc(transform.position, Vector3.up, attackRange);
         }
+
     }
 #endif
 }
