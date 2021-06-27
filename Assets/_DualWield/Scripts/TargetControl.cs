@@ -10,7 +10,7 @@ namespace Musahi.MY_VR_Games.DualWield
     /// 敵ターゲットを管理するクラス
     /// 追いかけては来ない
     /// </summary>
-    public class TargetControl : MonoBehaviour, IDamagable,IPoolUser<TargetControl>
+    public class TargetControl : MonoBehaviour, IDamagable, IPoolUser<TargetControl>
     {
         [SerializeField] Transform player;
         [SerializeField] float attackRange = 5f;
@@ -23,6 +23,10 @@ namespace Musahi.MY_VR_Games.DualWield
         [SerializeField, Range(1, 100)] int bulletPoolSize = 10;
         [SerializeField] Transform poolObjectParent;
 
+        [SerializeField] bool IsIkActive;
+        [SerializeField] Transform targetRightHand;
+        [SerializeField] Transform targetLeftHand;
+
         [SerializeField] UnityEventsWrapper OnDieEvents = default;
 
         [SerializeField] bool isTest = false;
@@ -30,9 +34,11 @@ namespace Musahi.MY_VR_Games.DualWield
         bool isDead = false;
         float lastAttackTime;
         PoolObjectManager poolObjectManager;
+        Animator anim;
 
         private void Start()
         {
+            anim = GetComponent<Animator>();
             if (!player)
             {
                 player = GameObject.FindGameObjectWithTag("Player").transform;
@@ -62,7 +68,6 @@ namespace Musahi.MY_VR_Games.DualWield
             var bullet = Instantiate(bulletPrefab, poolObjectParent);
 
             poolObj.AddObj(bullet.gameObject);
-            bullet.SetVelocity(muzzle);
             poolObj.SetActiveAll(false);
             return poolObj;
         }
@@ -73,10 +78,15 @@ namespace Musahi.MY_VR_Games.DualWield
             if (CanAttackPlayer())
             {
                 LookAtPlayer();
-                if(Time.time > lastAttackTime + fireRate)
+                IsIkActive = true;
+                if (Time.time > lastAttackTime + fireRate)
                 {
                     Shot();
                 }
+            }
+            else
+            {
+                IsIkActive = false;
             }
         }
 
@@ -124,6 +134,23 @@ namespace Musahi.MY_VR_Games.DualWield
             {
                 isDead = true;
             }
+        }
+
+        private void OnAnimatorIK(int layerIndex)
+        {
+            if (!IsIkActive) return;
+
+            if (targetLeftHand == null || targetRightHand == null) return;
+
+            // 両手の IK Position/Rotation をセットする
+            anim.SetIKPositionWeight(AvatarIKGoal.RightHand, 1f);
+            anim.SetIKRotationWeight(AvatarIKGoal.RightHand, 1f);
+            anim.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1f);
+            anim.SetIKRotationWeight(AvatarIKGoal.LeftHand, 1f);
+            anim.SetIKPosition(AvatarIKGoal.RightHand, targetRightHand.position);
+            anim.SetIKRotation(AvatarIKGoal.RightHand, targetRightHand.rotation);
+            anim.SetIKPosition(AvatarIKGoal.LeftHand, targetLeftHand.position);
+            anim.SetIKRotation(AvatarIKGoal.LeftHand, targetLeftHand.rotation);
         }
 
 #if UNITY_EDITOR

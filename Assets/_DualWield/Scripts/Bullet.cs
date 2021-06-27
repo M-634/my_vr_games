@@ -9,7 +9,6 @@ namespace Musahi.MY_VR_Games.DualWield
         [SerializeField] float lifeTime = 1f;
         [SerializeField] float shotPower = 100f;
 
-        bool init = true;
         Rigidbody rb;
         Vector3 prevPos;
 
@@ -19,22 +18,11 @@ namespace Musahi.MY_VR_Games.DualWield
             {
                 rb = GetComponent<Rigidbody>();
             }
+            rb.velocity = transform.forward * shotPower;
             prevPos = transform.position;
-            //rb.velocity = transform.forward * shotPower;
             gameObject.DelaySetActive(false, lifeTime, this.GetCancellationTokenOnDestroy()).Forget();
-            //if (init == false)
-            //{
-            //    gameObject.DelaySetActive(false, lifeTime, this.GetCancellationTokenOnDestroy()).Forget();
-            //}
-            //init = false;
         }
 
-
-        public void SetVelocity(Transform muzzle)
-        {
-            transform.forward = muzzle.forward;
-            rb.velocity = muzzle.forward * shotPower;
-        }
 
         private void Update()
         {

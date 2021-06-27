@@ -24,6 +24,7 @@ namespace Musahi.MY_VR_Games
                 Debug.LogWarning($"{playableAsset}がアサインされていません！");
             }
         }
+
         /// <summary>
         /// アクティブの切り替えを遅延させる拡張メソッド
         /// </summary>
