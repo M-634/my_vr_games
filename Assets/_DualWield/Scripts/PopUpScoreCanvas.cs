@@ -33,10 +33,15 @@ namespace Musahi.MY_VR_Games.DualWield
                 .OnComplete(()=> gameObject.DelaySetActive(false,delayDuration).Forget());
         }
 
+        /// <summary>
+        /// 敵撃破時のイベントから呼ばれる
+        /// </summary>
+        /// <param name="getScore"></param>
         public void SetScore(int getScore)
         {
             scoreText.text = getScore.ToString();
-            //スコアのイベントを飛ばす
+            //スコアを追加する
+            DualWieldGameFlowManager.Instance.CurrentLevelResultSumScore += getScore;
         }
 
         IEnumerator BillBoard()

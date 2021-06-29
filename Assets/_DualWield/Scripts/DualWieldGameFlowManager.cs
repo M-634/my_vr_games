@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Playables;
+using TMPro;
 
 namespace Musahi.MY_VR_Games.DualWield
 {
@@ -56,16 +57,23 @@ namespace Musahi.MY_VR_Games.DualWield
         [SerializeField] PlayableAsset GameClearPlayable = default;
         [SerializeField] PlayableAsset GameOverPlayable = default;
 
+        [SerializeField] TextMeshProUGUI resultScoreText = default;
+        [SerializeField] TextMeshProUGUI resultRankText = default;
+
         [SerializeField] XRPlayerMoveControl playerControl;
         [SerializeField] List<LevelSettingSOData> levelDatas;
 
 
+
         [SerializeField]//test
         public InstantiateLevelData CurrentLevelData;// { get; private set; }
-
-
+        /// <summary>ゲーム終了時のイベントを発行する。</summary>
+        public event Action OnEndGameAction = default;
         private readonly List<InstantiateLevelData> instantiateLevelDataList = new List<InstantiateLevelData>();
         PlayableDirector director;
+
+        /// <summary>現在遊んでいるレベルのリザルトスコア</summary>
+        public int CurrentLevelResultSumScore { get; set; }
 
         private void Start()
         {
@@ -96,6 +104,8 @@ namespace Musahi.MY_VR_Games.DualWield
         {
             if (_director.playableAsset == GameReadyStartPlayable)
             {
+                //スコアをリセットする
+                CurrentLevelResultSumScore = 0;
                 //ステージのタイムラインを再生する。プレイヤーを動かす
                 playerControl.AutoMoveStart = true;
                 CurrentLevelData.PlayLevelDirector();
@@ -139,9 +149,14 @@ namespace Musahi.MY_VR_Games.DualWield
         /// </summary>
         public void EndGame(bool isGameClear)
         {
-            //Event発行
             CurrentLevelData.StopLevelDirector();
             playerControl.AutoMoveStart = false;
+            //Event発行
+            if (OnEndGameAction != null)
+            {
+                OnEndGameAction.Invoke();
+            }
+
             //fadeOut
             playerControl.ResetPosition();
             CurrentLevelData.LevelActive(false);
@@ -163,13 +178,27 @@ namespace Musahi.MY_VR_Games.DualWield
 
         private void GameClear()
         {
+            if (resultScoreText)
+            {
+                resultScoreText.text = "Score : " + CurrentLevelResultSumScore.ToString();
+            }
+            if (resultRankText)
+            {
+                resultRankText.text = "Rank :" +  DetermineRank();
+            }
             director.PlayNullCheck(GameClearPlayable);
         }
-
         private void GameOver()
         {
             director.PlayNullCheck(GameOverPlayable);
         }
+
+        /// <summary>/// リザルトスコアに応じてランクを決める/// </summary>
+        private string DetermineRank()
+        {
+            return "";
+        }
+
     }
 }
 

@@ -33,11 +33,15 @@ namespace Musahi.MY_VR_Games.DualWield
 
         bool isDead = false;
         float lastAttackTime;
+        Vector3 initPos;
+        Vector3 initRotation;
         PoolObjectManager poolObjectManager;
         Animator anim;
 
         private void Start()
         {
+            initPos = transform.position;
+            initRotation = transform.rotation.eulerAngles;
             anim = GetComponent<Animator>();
             if (!player)
             {
@@ -134,6 +138,25 @@ namespace Musahi.MY_VR_Games.DualWield
             {
                 isDead = true;
             }
+        }
+
+        private void InitializeTransformAndActive()
+        {
+            //初期状態に戻す
+            transform.position = initPos;
+            transform.rotation = Quaternion.Euler(initRotation);
+            gameObject.SetActive(false);
+        }
+
+
+        private void OnEnable()
+        {
+            DualWieldGameFlowManager.Instance.OnEndGameAction += InitializeTransformAndActive;
+        }
+
+        private void OnDisable()
+        {
+            DualWieldGameFlowManager.Instance.OnEndGameAction -= InitializeTransformAndActive;
         }
 
         private void OnAnimatorIK(int layerIndex)
