@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
-using DG.Tweening;
 using UnityEditor;
-using Cysharp;
-using System;
+using UnityEngine.Playables;
 
 namespace Musahi.MY_VR_Games.DualWield
 {
@@ -140,23 +138,10 @@ namespace Musahi.MY_VR_Games.DualWield
             }
         }
 
-        private void InitializeTransformAndActive()
+        public void InitializeTransform()
         {
             //初期状態に戻す
-            transform.position = initPos;
-            transform.rotation = Quaternion.Euler(initRotation);
-            gameObject.SetActive(false);
-        }
-
-
-        private void OnEnable()
-        {
-            DualWieldGameFlowManager.Instance.OnEndGameAction += InitializeTransformAndActive;
-        }
-
-        private void OnDisable()
-        {
-            DualWieldGameFlowManager.Instance.OnEndGameAction -= InitializeTransformAndActive;
+            transform.SetPositionAndRotation(initPos, Quaternion.Euler(initRotation));
         }
 
         private void OnAnimatorIK(int layerIndex)

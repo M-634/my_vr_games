@@ -20,12 +20,14 @@ namespace Musahi.MY_VR_Games.DualWield
             public int LevelId;// { get; private set; }
             public GameObject LevelObject;// { get; private set; }
             public PlayableDirector LevelDirector;// { get; private set; }
+            public TargetControl[] LevelTargets;// = enemy
 
-            public InstantiateLevelData(int id, GameObject gameObject, PlayableDirector director)
+            public InstantiateLevelData(int id, GameObject gameObject, PlayableDirector director,TargetControl[] targets)
             {
                 LevelId = id;
                 LevelObject = gameObject;
                 LevelDirector = director;
+                LevelTargets = targets;
             }
 
             public void LevelActive(bool value)
@@ -34,6 +36,7 @@ namespace Musahi.MY_VR_Games.DualWield
                 {
                     LevelObject.SetActive(value);
                 }
+                SetTargetsActive(value);
             }
 
             public void PlayLevelDirector()
@@ -49,6 +52,18 @@ namespace Musahi.MY_VR_Games.DualWield
                 if (LevelDirector)
                 {
                     LevelDirector.Stop();
+                }
+            }
+
+            public void SetTargetsActive(bool value)
+            {
+                foreach (var target in LevelTargets)
+                {
+                    if (value)
+                    {
+                        target.InitializeTransform();
+                    }
+                    target.gameObject.SetActive(value);
                 }
             }
         }
@@ -67,8 +82,6 @@ namespace Musahi.MY_VR_Games.DualWield
 
         [SerializeField]//test
         public InstantiateLevelData CurrentLevelData;// { get; private set; }
-        /// <summary>ゲーム終了時のイベントを発行する。</summary>
-        public event Action OnEndGameAction = default;
         private readonly List<InstantiateLevelData> instantiateLevelDataList = new List<InstantiateLevelData>();
         PlayableDirector director;
 
@@ -95,7 +108,8 @@ namespace Musahi.MY_VR_Games.DualWield
         {
             var levelPrefab = Instantiate(data.GetLevelPrefab);
             levelPrefab.TryGetComponent(out PlayableDirector levelDirector);
-            var instanceLevelData = new InstantiateLevelData(data.GetID, levelPrefab, levelDirector);
+            var levelTargets = levelPrefab.GetComponentsInChildren<TargetControl>();
+            var instanceLevelData = new InstantiateLevelData(data.GetID, levelPrefab, levelDirector,levelTargets);
             instanceLevelData.LevelActive(false);
             instantiateLevelDataList.Add(instanceLevelData);
         }
@@ -151,12 +165,7 @@ namespace Musahi.MY_VR_Games.DualWield
         {
             CurrentLevelData.StopLevelDirector();
             playerControl.AutoMoveStart = false;
-            //Event発行
-            if (OnEndGameAction != null)
-            {
-                OnEndGameAction.Invoke();
-            }
-
+         
             //fadeOut
             playerControl.ResetPosition();
             CurrentLevelData.LevelActive(false);
