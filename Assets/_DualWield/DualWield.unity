@@ -1476,6 +1476,7 @@ MonoBehaviour:
   resultScoreText: {fileID: 94995797}
   resultRankText: {fileID: 963645858}
   playerControl: {fileID: 8670358692610399869}
+  playerHealth: {fileID: 8670358692610399620}
   levelDatas:
   - {fileID: 11400000, guid: c65de4f875405e0439c1f444e6bde14b, type: 2}
   CurrentLevelData:
@@ -3117,6 +3118,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8345652704799845826, guid: 7d46062126b82af4e911be533ad81446, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7d46062126b82af4e911be533ad81446, type: 3}
 --- !u!1001 &5814050666629068830
@@ -4005,8 +4010,8 @@ MonoBehaviour:
   m_RigBaseGameObject: {fileID: 8670358692610399618}
   m_CameraFloorOffsetObject: {fileID: 8670358693619434269}
   m_CameraGameObject: {fileID: 8670358692747363755}
-  m_RequestedTrackingOriginMode: 2
-  m_CameraYOffset: 1.36144
+  m_RequestedTrackingOriginMode: 1
+  m_CameraYOffset: 1.8
   m_TrackingSpace: 3
   m_TrackingOriginMode: -2147483648
 --- !u!114 &8670358692610399620

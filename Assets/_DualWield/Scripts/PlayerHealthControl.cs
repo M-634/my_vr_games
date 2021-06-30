@@ -33,7 +33,7 @@ namespace Musahi.MY_VR_Games.DualWield
             ResetHitCount();
         }
 
-        private  void ResetHitCount()
+        public void ResetHitCount()
         {
             CurrentHitCount = maxHitCount;
         }

@@ -36,8 +36,12 @@ namespace Musahi.MY_VR_Games.DualWield
         PoolObjectManager poolObjectManager;
         Animator anim;
 
+        /// <summary>
+        /// timelineのアクティブで切り替える
+        /// </summary>
         private void Start()
         {
+            Debug.Log("a");
             initPos = transform.position;
             initRotation = transform.rotation.eulerAngles;
             anim = GetComponent<Animator>();
@@ -136,12 +140,20 @@ namespace Musahi.MY_VR_Games.DualWield
             {
                 isDead = true;
             }
+            InitializeTransform();
         }
 
         public void InitializeTransform()
         {
             //初期状態に戻す
+            Debug.Log("呼ばれた");
             transform.SetPositionAndRotation(initPos, Quaternion.Euler(initRotation));
+            gameObject.SetActive(false);
+        }
+
+        private void OnEnable()
+        {
+            DualWieldGameFlowManager.Instance.CurrentLevelData.AddTarget(this);
         }
 
         private void OnAnimatorIK(int layerIndex)

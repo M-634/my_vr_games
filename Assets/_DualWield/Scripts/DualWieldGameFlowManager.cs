@@ -20,25 +20,21 @@ namespace Musahi.MY_VR_Games.DualWield
             public int LevelId;// { get; private set; }
             public GameObject LevelObject;// { get; private set; }
             public PlayableDirector LevelDirector;// { get; private set; }
-            public TargetControl[] LevelTargets;// = enemy
-
-            public InstantiateLevelData(int id, GameObject gameObject, PlayableDirector director,TargetControl[] targets)
+            public List<TargetControl> targetsList;
+            public InstantiateLevelData(int id, GameObject gameObject, PlayableDirector director)
             {
                 LevelId = id;
                 LevelObject = gameObject;
                 LevelDirector = director;
-                LevelTargets = targets;
+                targetsList = new List<TargetControl>();
             }
-
             public void LevelActive(bool value)
             {
                 if (LevelObject)
                 {
                     LevelObject.SetActive(value);
                 }
-                SetTargetsActive(value);
             }
-
             public void PlayLevelDirector()
             {
                 if (LevelDirector)
@@ -46,24 +42,23 @@ namespace Musahi.MY_VR_Games.DualWield
                     LevelDirector.Play();
                 }
             }
-
             public void StopLevelDirector()
             {
                 if (LevelDirector)
                 {
                     LevelDirector.Stop();
                 }
-            }
 
-            public void SetTargetsActive(bool value)
-            {
-                foreach (var target in LevelTargets)
+                foreach (var target in targetsList)
                 {
-                    if (value)
-                    {
-                        target.InitializeTransform();
-                    }
-                    target.gameObject.SetActive(value);
+                    target.InitializeTransform();
+                }
+            }
+            public void AddTarget(TargetControl target)
+            {
+                if (!targetsList.Contains(target))
+                {
+                    targetsList.Add(target);
                 }
             }
         }
@@ -76,6 +71,7 @@ namespace Musahi.MY_VR_Games.DualWield
         [SerializeField] TextMeshProUGUI resultRankText = default;
 
         [SerializeField] XRPlayerMoveControl playerControl;
+        [SerializeField] PlayerHealthControl playerHealth;
         [SerializeField] List<LevelSettingSOData> levelDatas;
 
 
@@ -108,8 +104,7 @@ namespace Musahi.MY_VR_Games.DualWield
         {
             var levelPrefab = Instantiate(data.GetLevelPrefab);
             levelPrefab.TryGetComponent(out PlayableDirector levelDirector);
-            var levelTargets = levelPrefab.GetComponentsInChildren<TargetControl>();
-            var instanceLevelData = new InstantiateLevelData(data.GetID, levelPrefab, levelDirector,levelTargets);
+            var instanceLevelData = new InstantiateLevelData(data.GetID, levelPrefab, levelDirector);
             instanceLevelData.LevelActive(false);
             instantiateLevelDataList.Add(instanceLevelData);
         }
@@ -129,6 +124,7 @@ namespace Musahi.MY_VR_Games.DualWield
             {
                 //èâä˙èÛë‘Ç…ñﬂÇÈ
                 Debug.Log("result");
+                CurrentLevelData = null;
             }
             director.playableAsset = null;
         }
@@ -165,9 +161,10 @@ namespace Musahi.MY_VR_Games.DualWield
         {
             CurrentLevelData.StopLevelDirector();
             playerControl.AutoMoveStart = false;
-         
+
             //fadeOut
             playerControl.ResetPosition();
+            playerHealth.ResetHitCount();
             CurrentLevelData.LevelActive(false);
             //fadeIn
             if (isGameClear)
@@ -193,7 +190,7 @@ namespace Musahi.MY_VR_Games.DualWield
             }
             if (resultRankText)
             {
-                resultRankText.text = "Rank :" +  DetermineRank();
+                resultRankText.text = "Rank :" + DetermineRank();
             }
             director.PlayNullCheck(GameClearPlayable);
         }
