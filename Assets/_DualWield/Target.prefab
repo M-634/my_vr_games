@@ -718,7 +718,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7068177919329496739}
   m_LocalRotation: {x: -0, y: -0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.49, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 7068177919329212743}
@@ -760,7 +760,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 0}
-  attackRange: 5
+  attackRange: 1.49
   attackRangeColor: {r: 1, g: 0, b: 0.75977707, a: 0.09803922}
   lookDuration: 0.2
   fireRate: 1
@@ -811,6 +811,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  ragdoll: {fileID: 3417583927258657265, guid: 84efa8b1dfac0a045846189c0415e805, type: 3}
   isTest: 0
 --- !u!136 &1280852657761145146
 CapsuleCollider:

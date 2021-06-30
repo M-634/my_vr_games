@@ -51,7 +51,7 @@ namespace Musahi.MY_VR_Games.DualWield
 
                 foreach (var target in targetsList)
                 {
-                    target.InitializeTransform();
+                    target.Initialize();
                 }
             }
             public void AddTarget(TargetControl target)

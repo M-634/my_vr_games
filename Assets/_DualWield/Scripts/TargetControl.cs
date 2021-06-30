@@ -26,6 +26,7 @@ namespace Musahi.MY_VR_Games.DualWield
         [SerializeField] Transform targetLeftHand;
 
         [SerializeField] UnityEventsWrapper OnDieEvents = default;
+        [SerializeField] TargetRagdollControl ragdoll;
 
         [SerializeField] bool isTest = false;
 
@@ -140,13 +141,19 @@ namespace Musahi.MY_VR_Games.DualWield
             {
                 isDead = true;
             }
-            InitializeTransform();
+
+            if (ragdoll)
+            {
+                Instantiate(ragdoll.gameObject, transform.position, Quaternion.identity);
+            }
+            Initialize();
         }
 
-        public void InitializeTransform()
+        public void Initialize()
         {
             //初期状態に戻す
             Debug.Log("呼ばれた");
+            isDead = false;
             transform.SetPositionAndRotation(initPos, Quaternion.Euler(initRotation));
             gameObject.SetActive(false);
         }
