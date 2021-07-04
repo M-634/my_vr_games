@@ -11,7 +11,8 @@ namespace Musahi.MY_VR_Games
     {
         NoController,//コントローラーで移動しない
         Teleport,//テレポートで移動する
-        Stick//コントローラーのスティック移動 
+        Stick,//コントローラーのスティック移動
+        Automatic//自動的に移動する
     }
 
     /// <summary>
@@ -20,11 +21,13 @@ namespace Musahi.MY_VR_Games
     public class XRPlayerMoveControl : MonoBehaviour
     {
         [SerializeField] PlayerMovementType movementType;
-        [SerializeField] XRNode inputSorce;
+        [SerializeField] XRNode inputSource;
         [SerializeField] float moveSpeed = 5.0f;
         [SerializeField] float gravityScale = 9.81f;
         [SerializeField] LayerMask groudLayer;
         [SerializeField] float additionalHeight = 0.2f;
+
+        public bool AutoMoveStart { get; set; }
 
         XRRig rig;
         CharacterController characterController;
@@ -39,9 +42,9 @@ namespace Musahi.MY_VR_Games
 
         void Update()
         {
-            if (movementType == PlayerMovementType.NoController) return;
+            if (movementType == PlayerMovementType.NoController || movementType == PlayerMovementType.Automatic) return;
 
-            var device = InputDevices.GetDeviceAtXRNode(inputSorce);
+            var device = InputDevices.GetDeviceAtXRNode(inputSource);
             device.TryGetFeatureValue(CommonUsages.primary2DAxis, out inputAxis);
         }
 
@@ -57,6 +60,9 @@ namespace Musahi.MY_VR_Games
                     break;
                 case PlayerMovementType.Stick:
                     StickMovement();
+                    break;
+                case PlayerMovementType.Automatic:
+                    AutoMove();
                     break;
                 default:
                     break;
@@ -84,6 +90,18 @@ namespace Musahi.MY_VR_Games
             }
         }
 
+
+        /// <summary>
+        /// プレイヤーのz軸正方向に自動的に移動する
+        /// </summary>
+        private void AutoMove()
+        {
+            if (AutoMoveStart)
+            {
+                characterController.Move(moveSpeed * Time.fixedDeltaTime * transform.forward);
+            }
+        }
+
         private bool CheakGround()
         {
             var ratStart = transform.TransformPoint(characterController.center);
@@ -96,6 +114,14 @@ namespace Musahi.MY_VR_Games
             characterController.height = rig.cameraInRigSpaceHeight + additionalHeight;
             Vector3 capsuleCenter = transform.InverseTransformPoint(rig.cameraGameObject.transform.position);
             characterController.center = new Vector3(capsuleCenter.x, characterController.height / 2 + characterController.skinWidth, capsuleCenter.z);
+        }
+
+        /// <summary>
+        /// プレイヤーを原点に戻す
+        /// </summary>
+        public void ResetPosition()
+        {
+            transform.position = Vector3.zero;
         }
     }
 }
