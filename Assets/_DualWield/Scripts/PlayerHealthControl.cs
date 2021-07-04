@@ -11,9 +11,11 @@ namespace Musahi.MY_VR_Games.DualWield
         [SerializeField] UnityEventsWrapper OnDamageEvents = default;
         [SerializeField] UnityEventsWrapper OnDieEvents = default;
 
-
         [SerializeField] VolumeProfile volumeProfile = default;
         [SerializeField] Vignette vignette;
+
+        [Header("debug")]
+        [SerializeField] bool isInvincible;//無敵モード
 
         int currentHitCount;
         bool isDead = false;
@@ -45,7 +47,7 @@ namespace Musahi.MY_VR_Games.DualWield
         /// <param name="damage"></param>
         public void OnDamage(float damage = 0)
         {
-            if (isDead) return;
+            if (isDead || isInvincible) return;
 
             CurrentHitCount--;
             if(CurrentHitCount == 0)

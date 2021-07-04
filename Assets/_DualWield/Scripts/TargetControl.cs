@@ -93,6 +93,11 @@ namespace Musahi.MY_VR_Games.DualWield
             }
             else
             {
+                if (IsIkActive)
+                {
+                    //一度プレイヤーが攻撃範囲に入って、そこから抜けたらアクティブを切る
+                    gameObject.SetActive(false);
+                }
                 IsIkActive = false;
             }
         }

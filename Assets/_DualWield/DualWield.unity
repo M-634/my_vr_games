@@ -1829,14 +1829,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 701256283, guid: 7d46062126b82af4e911be533ad81446, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2984998897128428850, guid: 7d46062126b82af4e911be533ad81446, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 5439203692742712161, guid: 7d46062126b82af4e911be533ad81446, type: 3}
       propertyPath: m_RootOrder
       value: 2
@@ -1887,7 +1879,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5439203692742712162, guid: 7d46062126b82af4e911be533ad81446, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7d46062126b82af4e911be533ad81446, type: 3}
@@ -2827,6 +2819,7 @@ MonoBehaviour:
         m_CallState: 2
   volumeProfile: {fileID: 11400000, guid: bd2bff8e54e53f4409036ba49f8a47d8, type: 2}
   vignette: {fileID: 0}
+  isInvincible: 1
 --- !u!143 &8670358692610399868
 CharacterController:
   m_ObjectHideFlags: 0
