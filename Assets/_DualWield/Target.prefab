@@ -765,7 +765,7 @@ MonoBehaviour:
   lookDuration: 0.2
   fireRate: 1
   muzzle: {fileID: 4267886519372020348}
-  bulletPrefab: {fileID: 4074829269842009550, guid: 19d51fae80c6e95419935dc704233c81, type: 3}
+  bulletPrefab: {fileID: 7052024416062051628, guid: 7770a69147503454b9378c6f45c60578, type: 3}
   bulletPoolSize: 10
   poolObjectParent: {fileID: 7068177917642155382}
   IsIkActive: 0

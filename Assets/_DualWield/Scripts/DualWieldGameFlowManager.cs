@@ -75,7 +75,6 @@ namespace Musahi.MY_VR_Games.DualWield
         [SerializeField] List<LevelSettingSOData> levelDatas;
 
 
-
         [SerializeField]//test
         public InstantiateLevelData CurrentLevelData;// { get; private set; }
         private readonly List<InstantiateLevelData> instantiateLevelDataList = new List<InstantiateLevelData>();
@@ -86,6 +85,8 @@ namespace Musahi.MY_VR_Games.DualWield
 
         private void Start()
         {
+            ScreenFade.Instance.FadeIn();
+
             director = GetComponent<PlayableDirector>();
             director.stopped += TimeLine_StopAction;
 
@@ -136,21 +137,21 @@ namespace Musahi.MY_VR_Games.DualWield
         /// </summary>
         public void OnSelectedLevel(int getID = 0)
         {
-            //fadeOut
-
-            foreach (var data in instantiateLevelDataList)
+            ScreenFade.Instance.FadeOut(() =>
             {
-                if (getID == data.LevelId)
+                foreach (var data in instantiateLevelDataList)
                 {
-                    data.LevelActive(true);
-                    CurrentLevelData = data;
-                    //fadeIn
-
-                    GameReadyStart();
-                    return;
+                    if (getID == data.LevelId)
+                    {
+                        data.LevelActive(true);
+                        CurrentLevelData = data;
+                        ScreenFade.Instance.FadeIn(() => GameReadyStart());
+                        return;
+                    }
                 }
-            }
-            Debug.LogWarning("指定したIDのステージが存在しません");
+                Debug.LogWarning("指定したIDのステージが存在しません");
+            });
+
         }
 
         /// <summary>
@@ -162,19 +163,26 @@ namespace Musahi.MY_VR_Games.DualWield
             CurrentLevelData.StopLevelDirector();
             playerControl.AutoMoveStart = false;
 
-            //fadeOut
-            playerControl.ResetPosition();
-            playerHealth.ResetHitCount();
-            CurrentLevelData.LevelActive(false);
-            //fadeIn
-            if (isGameClear)
+            ScreenFade.Instance.FadeOut(() =>
             {
-                GameClear();
-            }
-            else
-            {
-                GameOver();
-            }
+                playerControl.ResetPosition();
+                playerHealth.ResetHitCount();
+                CurrentLevelData.LevelActive(false);
+
+                ScreenFade.Instance.FadeIn(() =>
+                {
+                    if (isGameClear)
+                    {
+                        GameClear();
+                    }
+                    else
+                    {
+                        GameOver();
+                    }
+                });
+            });
+
+
         }
 
         private void GameReadyStart()

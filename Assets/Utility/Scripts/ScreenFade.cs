@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using DG.Tweening;
+using UnityEngine.Events;
 
 namespace Musahi.MY_VR_Games
 {
@@ -40,14 +41,18 @@ namespace Musahi.MY_VR_Games
             }
         }
 
-        public void FadeIn()
+        public void FadeIn(UnityAction callback = null)
         {
-            fadeMaterial.SetFloat(fadePropertyNameOfShader, 1f);
+            DOTween.To(() => alpha = 1f, (x) => alpha = x, 0f, duration)
+                .OnUpdate(() => fadeMaterial.SetFloat(fadePropertyNameOfShader, alpha))
+                .OnComplete(() => callback?.Invoke()); 
         }
 
-        public void FadeOut()
+        public void FadeOut(UnityAction callback = null)
         {
-            fadeMaterial.SetFloat(fadePropertyNameOfShader.Length, 0f);
+            DOTween.To(() => alpha = 0f, (x) => alpha = x, 1f, duration)
+               .OnUpdate(() => fadeMaterial.SetFloat(fadePropertyNameOfShader, alpha))
+               .OnComplete(() => callback?.Invoke());
         }
     }
 }
