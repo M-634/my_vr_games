@@ -762,7 +762,7 @@ MonoBehaviour:
   player: {fileID: 0}
   attackRange: 15
   attackRangeColor: {r: 1, g: 0, b: 0.75977707, a: 0.09803922}
-  lookDuration: 0.2
+  lookDuration: 1
   fireRate: 1
   muzzle: {fileID: 4267886519372020348}
   bulletPrefab: {fileID: 7052024416062051628, guid: 7770a69147503454b9378c6f45c60578, type: 3}

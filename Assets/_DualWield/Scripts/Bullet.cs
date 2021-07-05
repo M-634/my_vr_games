@@ -8,6 +8,7 @@ namespace Musahi.MY_VR_Games.DualWield
     {
         [SerializeField] float lifeTime = 1f;
         [SerializeField] float shotPower = 100f;
+        [SerializeField] float correctionDistance = 0.1f;
 
         Rigidbody rb;
         Vector3 prevPos;
@@ -18,7 +19,9 @@ namespace Musahi.MY_VR_Games.DualWield
             {
                 rb = GetComponent<Rigidbody>();
             }
-            rb.velocity = transform.forward * shotPower;
+            var target = Camera.main.transform.position + Vector3.forward * correctionDistance;
+            var dir = (target - transform.position).normalized;
+            rb.velocity = dir * shotPower;
             prevPos = transform.position;
             gameObject.DelaySetActive(false, lifeTime, this.GetCancellationTokenOnDestroy()).Forget();
         }
